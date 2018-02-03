@@ -1,4 +1,4 @@
-.group,S.host_name,S.ansible_host,S.backend_ip,S.frontend_ip,B.is_active,I.port_no,I.weight,F.sample
+S.group,S.host_name,S.ansible_host,S.backend_ip,S.frontend_ip,B.is_active,I.port_no,I.weight,F.sample
 web_server,web001,10.0.2.10,192.168.0.10,,true,8080,1,20.1
 web_server,web002,10.0.2.11,192.168.0.11,,true,,2,0.22
 web_server,web003,10.0.2.12,192.168.0.12,,true,,5,0.1
