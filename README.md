@@ -10,10 +10,10 @@ CSVファイルをInventory定義として読み込む、Dynamic Inventoryのサ
 
 |sample file|description |
 |:--|:--|
-|playbooks/csv_inventory.py| |
-|playbooks/inventory.csv| |
-|playbooks/common_val.yml| |
-|playbooks/ansible.cfg| |
+|playbooks/csv_inventory.py| Dynamic Inventory file|
+|playbooks/inventory.csv| Inventory file in CSV format.|
+|playbooks/common_val.yml| This file defines common settings.  Define common data for ALL group and group to which the node belongs.|
+|playbooks/ansible.cfg|Ansible configuration file. |
 
 ### playbooks/csv_inventory.py  
 Read CSV file, convert it to Ansible into JSON format configuration information and return it.  
