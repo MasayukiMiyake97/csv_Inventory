@@ -233,35 +233,75 @@ def make_groups(hostvars):
     return ret
 
 
-def add_groupvars(groups, common_info):
+def get_groupvars(common_info):
     """
-    Register group common information from common information in the group information dictionary.
+    Extract groupvars from group information defined in common information.
 
-    :param dict groups: group information dictionary.
     :param dict common_info: common information dictionary.
+    :rtype: dict
+    :return: groupvars dictionary.
     """ 
 
+    ret = {}
     # get group_vars
     if 'group_vars' in common_info: 
         group_vars = common_info['group_vars']
         for name, val in group_vars.items():
-            if name in groups:
-                groups[name]['vars'] = val
+            ret[name] = val
     # get all vars
     if 'all_vars' in common_info:
         all_vars = common_info['all_vars']
-	groups['all'] = {'vars': all_vars}
+        ret['all'] = all_vars
+
+    return ret
 
 
-def make_specific_items(node_info_array, common_info):
+def add_groupvars(groups, groupvars):
+    """
+    Register group common information from common information in the group information dictionary.
+
+    :param dict groups: group information dictionary.
+    :param dict groupvars: groupvars dictionary.
+    """ 
+
+    for name, val in groupvars.items():
+        if name == 'all':
+	    groups['all'] = {'vars': val}
+        else:
+            if name in groups:
+                groups[name]['vars'] = val
+
+
+def make_specific_items(node_info_array, groupvars):
     """
     With this function, customize node information array.
 
     :param array node_info_array: node information array.
-    :param dict common_info: common information dictionary.
+    :param dict groupvars: groupvars dictionary.
     :rtype: array
     :return: Customized node information array.
     """ 
+    backend_array = []
+
+    def_port_no = groupvars['web_server']['port_no']
+
+    # make ha proxy backend information
+    for node in node_info_array:
+        group = node['group']
+        if group == 'web_server':
+            host_name = node['host_name']
+            backend_ip = node['backend_ip']
+            port_no = node.get('port_no', def_port_no)
+            weight = node.get('weight', 1)
+            backend = {'host_name': host_name, 'backend_ip': backend_ip, 
+                       'port_no': port_no, 'weight': weight}
+            backend_array.append(backend)
+
+    # add web_backend
+    haproxy_group = groupvars.get('ha_proxy', None)
+    if haproxy_group is not None:
+        haproxy_group['web_backend'] = backend_array
+
 
     return node_info_array
 
@@ -275,13 +315,15 @@ def main():
     common_info = load_common_info('common_val.yml')
     # load inventory file
     node_info_array = load_csv_inventory('inventory.csv') 
+    # get groupvars
+    groupvars = get_groupvars(common_info)
     # make specific item
-    node_info_array = make_specific_items(node_info_array, common_info)
+    node_info_array = make_specific_items(node_info_array, groupvars)
 
     hostvars = make_hostvars(node_info_array)
     groups = make_groups(hostvars)
-
-    add_groupvars(groups, common_info)
+    # add groupvars
+    add_groupvars(groups, groupvars)
 
     groups['_meta'] = {'hostvars': hostvars}
     # dump JSON format
