@@ -11,12 +11,10 @@ all_vars:
 # group vars
 group_vars:
   ha_proxy:
-    ha_proxy_conf_path: /etc/ha_proxy/ 
-    ha_proxy_conf_file: xxx.ini 
-    port_no: 80 
+    ha_proxy_conf_path: /etc/haproxy/haproxy.cfg
+    http_port_no: 80
 
   web_server:
-    web_conf_path: /etc/http
-    web_conf_file: httpd.conf
-    port_no: 80 
+    web_conf_path: /etc/httpd/conf/httpd.conf
+    port_no: 80
 
