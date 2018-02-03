@@ -1,5 +1,9 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+"""
+This module reads the CSV file and converts it into inventory information.
+"""
+
 import csv
 import yaml
 import json
@@ -16,7 +20,7 @@ def load_csv_inventory(file_name):
 
     :param string file_name: csv file name
     :rtype: array
-    :return: node information list
+    :return: node information array.
     """ 
 
     # load csv
@@ -39,6 +43,16 @@ def load_csv_inventory(file_name):
 
 
 def load_header(header):
+    """
+    Read header line.
+    Returns an array of header information.
+    header information format => [{"item_type": Type, "item_name": item name},...]
+    ex. [{"item_type": "S", "item_name": "ansible_host"}, ...]
+
+    :param array header: Element array of headers.
+    :rtype: array
+    :return: Array of header information.
+    """ 
 
     ret = []
 
@@ -56,12 +70,23 @@ def load_header(header):
     return ret
 
 
-def load_node_info(header_info, item_array):
+def load_node_info(header_info_array, item_array):
+    """
+    Read node information line.
+    Returns an dict of node information.
+    node information format => {item_name1: value1, item_name2: value2, ...}
+    ex. {"host_name": "web001", "port_no": 80, ... }
+
+    :param array header_info_array: Array of .
+    :param array item_array: Array of node information.
+    :rtype: dict
+    :return: Dict of node information.
+    """ 
 
     ret = {}
 
     pos = 0
-    for header in header_info:
+    for header in header_info_array:
         item = item_array[pos].strip()
         item_type = header['item_type']
         item_name = header['item_name']
@@ -76,6 +101,16 @@ def load_node_info(header_info, item_array):
 
 
 def load_common_info(file_name):
+    """
+    Read node information line.
+    Returns an dict of node information.
+    node information format => {item_name1: value1, item_name2: value2, ...}
+    ex. {"host_name": "web001", "port_no": 80, ... }
+
+    :param string file_name: Name of common definition file in yaml format.
+    :rtype: dict
+    :return: Dict of common information.
+    """ 
 
     ret = None
     with open(file_name, 'r') as common_file:
@@ -85,6 +120,14 @@ def load_common_info(file_name):
 
 
 def conv_str2value(item_type, item):
+    """
+    Convert a character string to a specified data type.
+
+    :param string item_type: A character string representing the type of item data.
+    :param string item: Value of item data.
+    :rtype: undecided
+    :return: The converted value.
+    """ 
 
     ret = None
 
@@ -105,15 +148,17 @@ def conv_str2value(item_type, item):
             ret = False
     elif TYPE_FLOAT == item_type:
         ret = float(item)
+    else:
+        ret = item
 
     return ret
 
 
-def make_hostvars(node_info_list):
+def make_hostvars(node_info_array):
 
     ret = {}
 
-    for node_info in node_info_list:
+    for node_info in node_info_array:
         #" get host_name
         host_name = node_info.pop('host_name', None)
         if host_name is None:
@@ -164,20 +209,19 @@ def add_groupvars(groups, common_info):
 	groups['all'] = {'vars': all_vars}
 
 
-def make_specific_items(node_info_list, common_info):
+def make_specific_items(node_info_array, common_info):
 
-    return node_info_list
+    return node_info_array
 
 
- 
-if __name__ == '__main__':
+def main():
 
-    common_info = load_common_info('common.yml')
-    node_info_list = load_csv_inventory('inventory.csv') 
+    common_info = load_common_info('common_val.yml')
+    node_info_array = load_csv_inventory('inventory.csv') 
 
-    node_info_list = make_specific_items(node_info_list, common_info)
+    node_info_array = make_specific_items(node_info_array, common_info)
 
-    hostvars = make_hostvars(node_info_list)
+    hostvars = make_hostvars(node_info_array)
     groups = make_groups(hostvars)
 
     add_groupvars(groups, common_info)
@@ -186,4 +230,8 @@ if __name__ == '__main__':
 
     json.dump(groups, sys.stdout)
 
+ 
+if __name__ == '__main__':
+
+    main()
 
