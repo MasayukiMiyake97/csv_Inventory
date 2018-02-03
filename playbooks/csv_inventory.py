@@ -1,5 +1,21 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+# This module reads the CSV file and converts it into inventory information.
+#
+# Copyright (C) 2018 Masayuki Miyake
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http:#www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
 """
 This module reads the CSV file and converts it into inventory information.
 """
@@ -60,7 +76,9 @@ def load_header(header):
         item = item.strip()
         elements = item.split('.')
         if len(elements) >= 2:
+            # get item value type
             item_type = elements[0].strip()
+            # get item name
             item_name = elements[1].strip()
             ret.append({'item_type': item_type, 'item_name': item_name})
         else:
@@ -87,10 +105,11 @@ def load_node_info(header_info_array, item_array):
 
     pos = 0
     for header in header_info_array:
+        # get item value
         item = item_array[pos].strip()
         item_type = header['item_type']
         item_name = header['item_name']
-
+        # convert value
         val = conv_str2value(item_type, item)
         if val is not None:
             ret[item_name] = val
@@ -135,10 +154,13 @@ def conv_str2value(item_type, item):
         return None
 
     if TYPE_STRING == item_type:
+        # set string value
         ret = item
     elif TYPE_INTEGER == item_type:
+        # set integer value
         ret = int(item)
     elif TYPE_BOOLEAN == item_type:
+        # set boolean value
         item = item.lower()
         if item == 'true':
             ret = True
@@ -147,14 +169,23 @@ def conv_str2value(item_type, item):
         else:
             ret = False
     elif TYPE_FLOAT == item_type:
+        # set float value
         ret = float(item)
     else:
+        # set value
         ret = item
 
     return ret
 
 
 def make_hostvars(node_info_array):
+    """
+    Generate hostvars from the node information array.
+
+    :param array node_info_array: Node information array.
+    :rtype: dict
+    :return: Dictionary of hostvars.
+    """ 
 
     ret = {}
 
@@ -171,6 +202,13 @@ def make_hostvars(node_info_array):
 
 
 def make_groups(hostvars):
+    """
+    Generate groups information from the hostvars.
+
+    :param dict hostvars: hostvars.
+    :rtype: dict
+    :return: Dictionary of groups information.
+    """ 
 
     ret = {}
 
@@ -196,6 +234,12 @@ def make_groups(hostvars):
 
 
 def add_groupvars(groups, common_info):
+    """
+    Register group common information from common information in the group information dictionary.
+
+    :param dict groups: group information dictionary.
+    :param dict common_info: common information dictionary.
+    """ 
 
     # get group_vars
     if 'group_vars' in common_info: 
@@ -210,15 +254,28 @@ def add_groupvars(groups, common_info):
 
 
 def make_specific_items(node_info_array, common_info):
+    """
+    With this function, customize node information array.
+
+    :param array node_info_array: node information array.
+    :param dict common_info: common information dictionary.
+    :rtype: array
+    :return: Customized node information array.
+    """ 
 
     return node_info_array
 
 
 def main():
+    """
+    main function.
 
+    """ 
+    # load common information file
     common_info = load_common_info('common_val.yml')
+    # load inventory file
     node_info_array = load_csv_inventory('inventory.csv') 
-
+    # make specific item
     node_info_array = make_specific_items(node_info_array, common_info)
 
     hostvars = make_hostvars(node_info_array)
@@ -227,7 +284,7 @@ def main():
     add_groupvars(groups, common_info)
 
     groups['_meta'] = {'hostvars': hostvars}
-
+    # dump JSON format
     json.dump(groups, sys.stdout)
 
  

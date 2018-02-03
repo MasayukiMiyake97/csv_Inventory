@@ -1,11 +1,14 @@
+# specific value
 common_data: specific_val
 
+# all group vars
 all_vars:
   all_test1: 123234
   all_test2: 2.13
   all_test3: True
   all_test4: test_data
 
+# group vars
 group_vars:
   ha_proxy:
     ha_proxy_conf_path: /etc/ha_proxy/ 
