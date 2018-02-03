@@ -8,5 +8,18 @@ CSVファイルをInventory定義として読み込む、Dynamic Inventoryのサ
   
 ## サンプルファイルの説明(Sample file description)
 
+|sample file|description |
+|:--|:--|
+|playbooks/csv_inventory.py||
+|playbooks/inventory.csv||
+|playbooks/common_val.yml||
+|playbooks/ansible.cfg||
+
+playbooks/inventory.csv
 
 
+
+
+  
+Copyright Copyright (c) 2018 MasayukiMiyake  
+License Apache License, Version 2.0  
