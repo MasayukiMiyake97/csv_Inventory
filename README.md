@@ -1,6 +1,7 @@
 Ansible Dynamic Inventory サンプル（CSVファイル）
 ===
 We are publishing a sample of Dynamic Inventory which loads CSV file as Inventory definition.
+
 This sample is realized by reading the CSV file describing the configuration information and returning a character string of JSON format to Ansible.
 
 -----------------------------------------------
