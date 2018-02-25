@@ -320,7 +320,7 @@ def main():
     node_info_array = []
     for file_name in inv_list:
         # load 
-        nodes = load_csv_inventory('inventory.csv')
+        nodes = load_csv_inventory(file_name)
         if nodes is not None:
             node_info_array.extend(nodes)
 
