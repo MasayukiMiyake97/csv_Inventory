@@ -244,13 +244,13 @@ def get_groupvars(common_info):
 
     ret = {}
     # get group_vars
-    if 'group_vars' in common_info: 
-        group_vars = common_info['group_vars']
+    group_vars = common_info.pop('group_vars', None)
+    if group_vars is not None: 
         for name, val in group_vars.items():
             ret[name] = val
     # get all vars
-    if 'all_vars' in common_info:
-        all_vars = common_info['all_vars']
+    all_vars = common_info.pop('all_vars', None)
+    if all_vars is not None: 
         ret['all'] = all_vars
 
     return ret
@@ -272,12 +272,13 @@ def add_groupvars(groups, groupvars):
                 groups[name]['vars'] = val
 
 
-def make_specific_items(node_info_array, groupvars):
+def make_specific_items(node_info_array, groupvars, spec_vars):
     """
     With this function, customize node information array.
 
     :param array node_info_array: node information array.
     :param dict groupvars: groupvars dictionary.
+    :param dict spec_vars: specific values dictionary.
     :rtype: array
     :return: Customized node information array.
     """ 
@@ -313,19 +314,30 @@ def main():
     """ 
     # load common information file
     common_info = load_common_info('common_val.yml')
+
     # load inventory file
-    node_info_array = load_csv_inventory('inventory.csv') 
+    inv_list = common_info.pop('inventory_list', ['inventory.csv'])
+    node_info_array = []
+    for file_name in inv_list:
+        # load 
+        nodes = load_csv_inventory('inventory.csv')
+        if nodes is not None:
+            node_info_array.extend(nodes)
+
     # get groupvars
     groupvars = get_groupvars(common_info)
+
     # make specific item
-    node_info_array = make_specific_items(node_info_array, groupvars)
+    specific_vars = common_info.pop('specific_vars', {})
+    node_info_array = make_specific_items(node_info_array, groupvars, specific_vars)
 
     hostvars = make_hostvars(node_info_array)
     groups = make_groups(hostvars)
+
     # add groupvars
     add_groupvars(groups, groupvars)
-
     groups['_meta'] = {'hostvars': hostvars}
+
     # dump JSON format
     json.dump(groups, sys.stdout)
 

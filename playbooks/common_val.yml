@@ -1,5 +1,6 @@
-# specific value
-common_data: specific_val
+# inventory file list
+inventory_list:
+  - inventory.csv
 
 # all group vars
 all_vars:
@@ -17,4 +18,8 @@ group_vars:
   web_server:
     web_conf_path: /etc/httpd/conf/httpd.conf
     port_no: 80
+
+# specific values
+specific_vars:
+  specific_data: specific_val
 
