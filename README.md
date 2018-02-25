@@ -31,8 +31,9 @@ CSVファイルを読み込んで、Ansibleに対してJSON形式の構成情報
     
 ### playbooks/common_val.yml  
 
-    common_data: specific_val
-    
+    inventory_list:
+      - inventory.csv
+   
     all_vars:
       all_test1: 123234
       all_test2: 2.13
@@ -47,6 +48,9 @@ CSVファイルを読み込んで、Ansibleに対してJSON形式の構成情報
       web_server:
         web_conf_path: /etc/httpd/conf/httpd.conf
         port_no: 80
+
+    specific_vars:
+      specific_data: specific_val
 
 ## csv_inventory.pyの出力例(Sample output from csv_inventory.py)
 
