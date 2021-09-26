@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding:utf-8 -*-
 # This module reads the CSV file and converts it into inventory information.
 #
@@ -133,7 +133,7 @@ def load_common_info(file_name):
 
     ret = None
     with open(file_name, 'r') as common_file:
-        ret = yaml.load(common_file)
+        ret = yaml.load(common_file,Loader=yaml.FullLoader)
 
     return ret
 
@@ -266,7 +266,7 @@ def add_groupvars(groups, groupvars):
 
     for name, val in groupvars.items():
         if name == 'all':
-	    groups['all'] = {'vars': val}
+          groups['all'] = {'vars': val}
         else:
             if name in groups:
                 groups[name]['vars'] = val
@@ -341,7 +341,7 @@ def main():
     # dump JSON format
     json.dump(groups, sys.stdout)
 
- 
+
 if __name__ == '__main__':
 
     main()
